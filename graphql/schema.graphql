@@ -39,3 +39,39 @@ type User {
     "When the account was last updated."
     updated_at: DateTime!
 }
+
+
+type Category {
+  id: ID!
+  name: String! @rules(apply: ["unique:categories,name"])
+  books: [Book] @belongsTo
+}
+
+type Book {
+  id: ID!
+  title: String!
+  author: String!
+  categories: [Category!]! @belongsTo
+}
+
+type Query {
+  categories: [Category] @all
+  category(id: ID @eq): Category @find
+
+  books: [Book] @all
+  book(id: ID @eq): Book @find
+  booksByPartialTitle(search: String!): [Book]
+  totalBooksCount(categoryId: ID): Int! 
+}
+
+type Mutation {
+  createCategory(name: String! @rules(apply: ["unique:categories,name"])): Category! @create 
+  updateCategory(id: ID!, name: String! @rules(apply: ["unique:categories,name"])): Category! @update
+  deleteCategory(id: ID! @whereKey): Category! @delete
+
+  createBook(title: String!, author: String!): Book! @create
+  assignBookCategoryByName(bookId: ID!, categoryName: String!): Book!
+  updateBook(id: ID!, title: String, author: String @rules(apply: ["sometimes","min:4"])): Book! @update
+  unassignBookCategoryByName(bookId: ID!, categoryName: String!): Book!
+  deleteBook(id: ID! @whereKey): Book! @delete
+}

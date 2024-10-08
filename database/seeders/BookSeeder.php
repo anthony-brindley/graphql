@@ -14,7 +14,9 @@ class BookSeeder extends Seeder
      */
     public function run(): void
     {
-        $books = Book::factory()->count(50)->create();
+        $numberOfBooks = rand(1000, 10000);
+
+        $books = Book::factory()->count($numberOfBooks)->create();
 
         $categories = Category::all();
 
